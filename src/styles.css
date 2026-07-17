@@ -1,0 +1,250 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Manrope:wght@400;500;600;700&display=swap");
+
+:root {
+  --bg: #f3efe8;
+  --bg-deep: #ebe4d8;
+  --ink: #1f2a2e;
+  --ink-soft: #5a666c;
+  --warm: #f0b48a;
+  --cool: #9bb4d4;
+  --accent: #2f6f6a;
+  --accent-ink: #f7f4ef;
+  --line: rgba(31, 42, 46, 0.1);
+  --shadow: 0 24px 60px rgba(47, 70, 78, 0.12);
+  --radius: 18px;
+  font-family: "Manrope", sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(240, 180, 138, 0.35), transparent 36%),
+    radial-gradient(circle at 88% 22%, rgba(155, 180, 212, 0.32), transparent 34%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+}
+
+.ambient {
+  position: absolute;
+  width: 42vw;
+  height: 42vw;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
+  animation: drift 14s ease-in-out infinite alternate;
+}
+
+.ambient-warm {
+  top: -8%;
+  left: -6%;
+  background: var(--warm);
+}
+
+.ambient-cool {
+  top: -4%;
+  right: -8%;
+  background: var(--cool);
+  animation-delay: -4s;
+}
+
+.app-header,
+.hero,
+.app-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.75rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.brand-name {
+  margin: 0;
+  font-family: "Fraunces", serif;
+  font-size: 1.15rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.brand-tag {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.app-logo {
+  display: block;
+  border-radius: 28%;
+  object-fit: cover;
+  box-shadow: 0 8px 24px rgba(47, 70, 78, 0.12);
+  user-select: none;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1.5rem 3rem;
+  gap: 1rem;
+}
+
+.hero-logo {
+  margin-bottom: 0.5rem;
+  animation: rise-in 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero h1 {
+  margin: 0;
+  max-width: 14ch;
+  font-family: "Fraunces", serif;
+  font-size: clamp(2.1rem, 4.5vw, 3.4rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  animation: rise-in 900ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
+}
+
+.hero-support {
+  margin: 0;
+  max-width: 36rem;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  line-height: 1.55;
+  animation: rise-in 900ms cubic-bezier(0.22, 1, 0.36, 1) 140ms both;
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+  animation: rise-in 900ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both;
+}
+
+.cta {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.8rem 1.35rem;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.cta.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: var(--shadow);
+}
+
+.cta.secondary {
+  background: rgba(255, 255, 255, 0.55);
+  border-color: var(--line);
+  color: var(--ink);
+  backdrop-filter: blur(8px);
+}
+
+.cta:hover {
+  transform: translateY(-1px);
+}
+
+.cta:active {
+  transform: translateY(0);
+}
+
+.app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 1rem 1.5rem 1.4rem;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.app-footer .app-logo {
+  box-shadow: none;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2%, 4%, 0) scale(1.06);
+  }
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    padding: 1rem;
+  }
+
+  .brand-tag {
+    display: none;
+  }
+
+  .hero {
+    padding-inline: 1rem;
+  }
+}

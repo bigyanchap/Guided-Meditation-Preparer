@@ -1,0 +1,61 @@
+{
+  "name": "guided-meditation-preparer",
+  "version": "0.1.0",
+  "description": "Guided Meditation Preparing desktop app by stitching tiny recordings.",
+  "author": "Awaken Me",
+  "private": true,
+  "main": "electron/main.cjs",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron:dev": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "electron:build": "npm run build && electron-builder",
+    "start": "electron ."
+  },
+  "build": {
+    "appId": "com.awakenme.guided-meditation-preparer",
+    "productName": "Guided Meditation Preparer",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "assets/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "assets/logo.png",
+        "to": "logo.png"
+      }
+    ],
+    "mac": {
+      "icon": "assets/logo.png",
+      "category": "public.app-category.lifestyle"
+    },
+    "win": {
+      "icon": "assets/logo.png"
+    },
+    "linux": {
+      "icon": "assets/logo.png",
+      "category": "AudioVideo"
+    }
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "electron": "^34.0.0",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "wait-on": "^8.0.2"
+  }
+}
