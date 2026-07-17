@@ -562,38 +562,27 @@ export default function App() {
             style={{ backgroundImage: 'var(--page-glow)' }}
           >
             <div className="flex flex-col items-center text-center px-6 max-w-sm w-full">
-              <motion.img
-                src="/logo.png"
-                alt="ZenGM logo"
-                className="w-24 h-24 object-contain mb-5 drop-shadow-md"
-                initial={{ opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.55, ease: 'easeOut' }}
-              />
-              <motion.h1
-                className="brand-display text-2xl font-medium tracking-tight mb-1"
-                initial={{ opacity: 0, y: 6 }}
+              <motion.div
+                className="flex flex-col items-center"
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.12, duration: 0.45 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
               >
-                ZenGM
-              </motion.h1>
-              <motion.p
-                className="text-[var(--text-secondary)] text-xs mb-1"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.18, duration: 0.4 }}
-              >
-                Guided Meditation Generator
-              </motion.p>
-              <motion.p
-                className="text-[var(--text-muted)] text-xs mb-8"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.22, duration: 0.4 }}
-              >
-                Loading voice model
-              </motion.p>
+                <img
+                  src="/logo.png"
+                  alt="ZenGM logo"
+                  className="w-24 h-24 object-contain mb-5 drop-shadow-md"
+                />
+                <h1 className="brand-display text-2xl font-medium tracking-tight text-[var(--text-primary)] mb-1">
+                  ZenGM
+                </h1>
+                <p className="text-[var(--text-secondary)] text-xs mb-1">
+                  Guided Meditation Generator
+                </p>
+                <p className="text-[var(--text-muted)] text-xs mb-8">
+                  Loading voice model
+                </p>
+              </motion.div>
 
               {modelStatus === 'loading' && (
                 <div className="w-full space-y-2">

@@ -641,7 +641,7 @@ export default function MeditationGenerator({
             type="button"
             onClick={generateAudio}
             disabled={isGenerating || isIastifying || !text.trim() || modelStatus !== 'ready'}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-input)] border border-[var(--border-strong)] rounded hover:bg-[var(--bg-active)] transition disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded border border-transparent bg-[var(--accent)] text-white hover:brightness-110 transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:brightness-100"
           >
             {isGenerating ? <Loader2 size={12} className="animate-spin" /> : null}
             {isGenerating ? 'Processing...' : 'Generate'}
