@@ -1,0 +1,17 @@
+node_modules/
+build/
+dist/
+dist-electron/
+release/
+coverage/
+.DS_Store
+*.log
+
+# Secrets & local key material — never commit API keys
+.env
+.env.*
+!.env.example
+*.pem
+localStorage*.json
+*secrets*.json
+credentials.json
