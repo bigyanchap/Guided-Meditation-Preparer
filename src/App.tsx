@@ -11,7 +11,7 @@ export default function App() {
 
       <main className="hero">
         <AppLogo size={168} className="hero-logo" priority />
-        <h1>Prepare guided meditations with ease</h1>
+        <h1>Guided Meditation Preparer</h1>
         <p className="hero-support">
           Capture short takes, arrange them in sequence, and export a single
           seamless guided session.

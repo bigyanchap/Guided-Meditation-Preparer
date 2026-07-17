@@ -141,7 +141,7 @@ button {
 
 .hero h1 {
   margin: 0;
-  max-width: 14ch;
+  max-width: 16ch;
   font-family: "Fraunces", serif;
   font-size: clamp(2.1rem, 4.5vw, 3.4rem);
   font-weight: 650;
