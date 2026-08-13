@@ -6,7 +6,7 @@ export default function TitleBar() {
   return (
     <header className="titlebar">
       <div className="titlebar-drag">
-        <span className="titlebar-mark" aria-hidden />
+        <img className="titlebar-logo" src="/icon.png" alt="" width="22" height="22" />
         <h1 className="titlebar-title">Guided Meditation Preparer</h1>
       </div>
       <div className="titlebar-controls">

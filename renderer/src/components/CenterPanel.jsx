@@ -38,6 +38,7 @@ export default function CenterPanel({ onToggleRecord }) {
     return (
       <main className="panel panel-center glass">
         <div className="studio-empty">
+          <img className="studio-logo" src="/icon.png" alt="" width="88" height="88" />
           <p className="studio-brand">Guided Meditation Preparer</p>
           <h2>Ready when you are</h2>
           <p>

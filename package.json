@@ -7,9 +7,10 @@
   "license": "MIT",
   "scripts": {
     "dev": "concurrently -k \"npm run dev:renderer\" \"npm run dev:electron\"",
-    "dev:renderer": "npm run dev --prefix renderer",
+    "sync:icon": "cp assets/icon.png renderer/public/icon.png",
+    "dev:renderer": "npm run sync:icon && npm run dev --prefix renderer",
     "dev:electron": "wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .",
-    "build:renderer": "npm run build --prefix renderer",
+    "build:renderer": "npm run sync:icon && npm run build --prefix renderer",
     "build": "npm run build:renderer && electron-builder",
     "start": "electron ."
   },
@@ -28,6 +29,7 @@
   "build": {
     "appId": "com.meditation.preparer",
     "productName": "Guided Meditation Preparer",
+    "icon": "assets/icon.png",
     "directories": {
       "output": "dist"
     },
@@ -37,25 +39,40 @@
       "assets/**/*",
       "package.json"
     ],
-    "extraResources": [
-      {
-        "from": "node_modules/ffmpeg-static/ffmpeg.exe",
-        "to": "ffmpeg/ffmpeg.exe"
-      }
+    "asarUnpack": [
+      "**/node_modules/ffmpeg-static/ffmpeg"
     ],
     "win": {
       "target": [
         "nsis"
+      ],
+      "extraResources": [
+        {
+          "from": "node_modules/ffmpeg-static/ffmpeg.exe",
+          "to": "ffmpeg/ffmpeg.exe"
+        }
       ]
     },
     "mac": {
       "target": [
         "dmg"
+      ],
+      "extraResources": [
+        {
+          "from": "node_modules/ffmpeg-static/ffmpeg",
+          "to": "ffmpeg/ffmpeg"
+        }
       ]
     },
     "linux": {
       "target": [
         "AppImage"
+      ],
+      "extraResources": [
+        {
+          "from": "node_modules/ffmpeg-static/ffmpeg",
+          "to": "ffmpeg/ffmpeg"
+        }
       ]
     }
   }

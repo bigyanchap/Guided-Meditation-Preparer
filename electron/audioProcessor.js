@@ -4,7 +4,7 @@ const ffmpeg = require('fluent-ffmpeg')
 const ffmpegStatic = require('ffmpeg-static')
 
 function getFfmpegPath() {
-  // Prefer packaged resource path when available
+  // Prefer packaged resource path when available (outside asar)
   if (process.resourcesPath) {
     const packaged = path.join(
       process.resourcesPath,
@@ -13,7 +13,14 @@ function getFfmpegPath() {
     )
     if (fs.existsSync(packaged)) return packaged
   }
-  return ffmpegStatic
+
+  // ffmpeg-static may point inside app.asar; binaries must be spawned from unpacked path
+  let resolved = ffmpegStatic
+  if (resolved && resolved.includes('app.asar' + path.sep)) {
+    const unpacked = resolved.replace('app.asar' + path.sep, 'app.asar.unpacked' + path.sep)
+    if (fs.existsSync(unpacked)) return unpacked
+  }
+  return resolved
 }
 
 ffmpeg.setFfmpegPath(getFfmpegPath())
