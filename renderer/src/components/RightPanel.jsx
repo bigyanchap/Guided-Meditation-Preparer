@@ -14,8 +14,8 @@ const STEPS = [
   },
   {
     key: 'trim',
-    title: 'Trim Tail Click',
-    desc: 'Drop the last 1 second',
+    title: 'Trim Edges',
+    desc: 'Drop first 2s and last 1s',
   },
   {
     key: 'stitch',
@@ -62,7 +62,7 @@ export default function RightPanel({
           disabled={!hasDone || isRecording || isProcessing}
           onClick={onListenAll}
         >
-          {isPlayingAll ? '■ Stop Playback' : '▶▶ Listen to All Together'}
+          {isPlayingAll ? '■ Stop' : '▶▶ Listen to All Together'}
         </button>
         <button
           type="button"

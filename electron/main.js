@@ -3,7 +3,7 @@ const path = require('path')
 const fs = require('fs')
 const Store = require('electron-store')
 const { ensureSession, getSessionPaths, createNewSession } = require('./session')
-const { processPipeline, getFfmpegPath } = require('./audioProcessor')
+const { processPipeline, getFfmpegPath, trimKeepStart } = require('./audioProcessor')
 
 const isDev = process.env.NODE_ENV === 'development'
 const store = new Store({ name: 'meditation-preparer' })
@@ -135,6 +135,15 @@ ipcMain.handle('audio:readFile', async (_event, filePath) => {
 
 ipcMain.handle('audio:fileExists', async (_event, filePath) => {
   return Boolean(filePath && fs.existsSync(filePath))
+})
+
+ipcMain.handle('audio:trimKeepStart', async (_event, { filePath, keepUntil }) => {
+  try {
+    const result = await trimKeepStart(filePath, keepUntil)
+    return { ok: true, ...result }
+  } catch (err) {
+    return { ok: false, error: err.message }
+  }
 })
 
 // ── Processing pipeline ──────────────────────────────────────────

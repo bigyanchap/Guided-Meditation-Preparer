@@ -58,10 +58,17 @@ export default function App() {
 
   const handleToggleRecord = useCallback(async () => {
     clearWarning()
-    const active = useStore.getState().getActiveSegment()
+    let store = useStore.getState()
+    let active = store.getActiveSegment()
+    if (!active) {
+      store.addSegment()
+      store = useStore.getState()
+      active = store.getActiveSegment()
+    }
     if (!active) return
 
-    if (isRecording) {
+    if (store.isRecording) {
+      store.setTeleprompterAutoplay(false)
       await stopRecording(active.id)
       return
     }
@@ -72,8 +79,13 @@ export default function App() {
       resetSegment(active.id)
     }
 
-    await startRecording(active.id)
-  }, [isRecording, startRecording, stopRecording, resetSegment, clearWarning])
+    const result = await startRecording(active.id)
+    const latest = useStore.getState()
+    if (result?.ok && latest.scriptText.trim()) {
+      latest.setTeleprompterEditing(false)
+      latest.setTeleprompterAutoplay(true)
+    }
+  }, [startRecording, stopRecording, resetSegment, clearWarning])
 
   const handleRetake = useCallback(
     async (segment) => {
@@ -90,14 +102,14 @@ export default function App() {
   )
 
   const handlePlaySegment = useCallback(
-    (segment) => {
+    (segment, startAt = 0) => {
       clearWarning()
       const playing = useStore.getState().playingSegmentId
       if (playing === segment.id) {
         stop()
         return
       }
-      playSegment(segment)
+      playSegment(segment, startAt)
     },
     [playSegment, stop, clearWarning]
   )
@@ -110,6 +122,33 @@ export default function App() {
     }
     playAll()
   }, [isPlayingAll, playAll, stop, clearWarning])
+
+  const handleTrimRemaining = useCallback(
+    async (segment, keepUntil) => {
+      clearWarning()
+      stop()
+      if (!segment?.filePath || !window.electronAPI) {
+        setWarning('Trimming requires the Electron app.')
+        return
+      }
+      const latest =
+        useStore.getState().segments.find((s) => s.id === segment.id) || segment
+      const result = await window.electronAPI.trimKeepStart({
+        filePath: latest.filePath,
+        keepUntil,
+      })
+      if (!result.ok) {
+        setWarning(result.error || 'Trim failed')
+        return
+      }
+      useStore.getState().updateSegmentAudio(latest.id, {
+        filePath: result.filePath,
+        duration: result.duration,
+        waveformData: result.waveformData,
+      })
+    },
+    [clearWarning, stop, setWarning]
+  )
 
   const handlePreviewStitched = useCallback(async () => {
     clearWarning()
@@ -187,7 +226,11 @@ export default function App() {
       <div className="app-veil" />
       <TitleBar />
       <div className="app-body">
-        <LeftPanel onPlaySegment={handlePlaySegment} onRetake={handleRetake} />
+        <LeftPanel
+          onPlaySegment={handlePlaySegment}
+          onRetake={handleRetake}
+          onTrimRemaining={handleTrimRemaining}
+        />
         <CenterPanel onToggleRecord={handleToggleRecord} />
         <RightPanel
           onListenAll={handleListenAll}

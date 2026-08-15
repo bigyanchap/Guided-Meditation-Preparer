@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   deleteSegment: (filePath) => ipcRenderer.invoke('audio:deleteSegment', filePath),
   readAudioFile: (filePath) => ipcRenderer.invoke('audio:readFile', filePath),
   fileExists: (filePath) => ipcRenderer.invoke('audio:fileExists', filePath),
+  trimKeepStart: (payload) => ipcRenderer.invoke('audio:trimKeepStart', payload),
 
   // Processing
   runProcessingPipeline: (segmentPaths) =>

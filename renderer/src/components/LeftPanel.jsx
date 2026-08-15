@@ -2,7 +2,7 @@ import React from 'react'
 import { useStore } from '../store/useStore'
 import RecordCard from './RecordCard'
 
-export default function LeftPanel({ onPlaySegment, onRetake }) {
+export default function LeftPanel({ onPlaySegment, onRetake, onTrimRemaining }) {
   const segments = useStore((s) => s.segments)
   const activeSegmentId = useStore((s) => s.activeSegmentId)
   const playingSegmentId = useStore((s) => s.playingSegmentId)
@@ -31,8 +31,9 @@ export default function LeftPanel({ onPlaySegment, onRetake }) {
               active={seg.id === activeSegmentId}
               playing={seg.id === playingSegmentId}
               onSelect={() => selectSegment(seg.id)}
-              onPlay={() => onPlaySegment(seg)}
+              onPlay={(startAt) => onPlaySegment(seg, startAt)}
               onRetake={() => onRetake(seg)}
+              onTrimRemaining={onTrimRemaining}
             />
           ))
         )}

@@ -38,20 +38,39 @@ function writeString(view, offset, str) {
 
 /**
  * Downsample amplitude peaks for waveform display.
+ * Emphasizes spoken parts vs quiet gaps.
  */
 export function buildWaveform(samples, bars = 48) {
   if (!samples.length) return Array(bars).fill(0.08)
   const block = Math.floor(samples.length / bars) || 1
-  const data = []
+  const peaks = []
+
   for (let i = 0; i < bars; i++) {
+    let peak = 0
     let sum = 0
+    let count = 0
     const start = i * block
-    for (let j = start; j < start + block && j < samples.length; j++) {
-      sum += Math.abs(samples[j])
+    const end = Math.min(start + block, samples.length)
+    for (let j = start; j < end; j++) {
+      const a = Math.abs(samples[j])
+      if (a > peak) peak = a
+      sum += a
+      count++
     }
-    data.push(Math.min(1, (sum / block) * 3.2))
+    // Blend peak + average so sustained speech stays strong
+    const avg = count ? sum / count : 0
+    peaks.push(peak * 0.7 + avg * 0.3)
   }
-  return data
+
+  const max = Math.max(...peaks, 1e-6)
+
+  return peaks.map((p) => {
+    const n = p / max
+    // Gate near-silence; lift mid/high levels so speech fills the bar
+    if (n < 0.035) return 0.07
+    const boosted = Math.pow(n, 0.55)
+    return Math.min(1, 0.14 + boosted * 0.86)
+  })
 }
 
 /**

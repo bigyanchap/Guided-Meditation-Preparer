@@ -17,6 +17,16 @@ declare global {
       deleteSegment: (filePath: string) => Promise<{ ok: boolean; error?: string }>
       readAudioFile: (filePath: string) => Promise<ArrayBuffer | Uint8Array>
       fileExists: (filePath: string) => Promise<boolean>
+      trimKeepStart: (payload: {
+        filePath: string
+        keepUntil: number
+      }) => Promise<{
+        ok: boolean
+        filePath?: string
+        duration?: number
+        waveformData?: number[]
+        error?: string
+      }>
       runProcessingPipeline: (
         segmentPaths: string[]
       ) => Promise<{ ok: boolean; path?: string; error?: string }>
