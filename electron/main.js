@@ -19,7 +19,7 @@ function createWindow() {
     minHeight: 700,
     frame: false,
     titleBarStyle: 'hidden',
-    backgroundColor: '#e8e4dc',
+    backgroundColor: '#d5e0d9',
     icon: path.join(__dirname, '../assets/icon.png'),
     show: false,
     webPreferences: {
