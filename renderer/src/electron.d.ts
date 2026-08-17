@@ -3,6 +3,7 @@ export {}
 declare global {
   interface Window {
     electronAPI?: {
+      platform?: NodeJS.Platform
       minimize: () => Promise<void>
       maximize: () => Promise<void>
       close: () => Promise<void>

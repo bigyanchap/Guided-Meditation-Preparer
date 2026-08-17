@@ -132,13 +132,26 @@ button:disabled {
   display: flex;
   align-items: stretch;
   flex-shrink: 0;
-  margin: 8px 14px 0;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.28);
+  margin: 0;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.34);
   backdrop-filter: blur(28px) saturate(1.35);
   -webkit-backdrop-filter: blur(28px) saturate(1.35);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: var(--shadow-glass);
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+}
+
+/* Plain reserved area for macOS traffic lights — no interactive UI */
+.titlebar-traffic-safe {
+  width: 78px;
+  flex-shrink: 0;
+  -webkit-app-region: no-drag;
+  background: transparent;
+}
+
+.titlebar.is-mac .titlebar-drag {
+  padding-left: 4px;
 }
 
 .titlebar-drag {

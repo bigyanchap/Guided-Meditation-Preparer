@@ -11,6 +11,8 @@ const store = new Store({ name: 'meditation-preparer' })
 let mainWindow = null
 let currentSession = null
 
+const isMac = process.platform === 'darwin'
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1100,
@@ -18,7 +20,12 @@ function createWindow() {
     minWidth: 1100,
     minHeight: 700,
     frame: false,
-    titleBarStyle: 'hidden',
+    ...(isMac
+      ? {
+          titleBarStyle: 'hiddenInset',
+          trafficLightPosition: { x: 16, y: 14 },
+        }
+      : {}),
     backgroundColor: '#d5e0d9',
     icon: path.join(__dirname, '../assets/icon.png'),
     show: false,
