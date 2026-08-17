@@ -51,6 +51,10 @@ Sessions are stored under:
 5. **Preview Stitched Audio** to run the ffmpeg pipeline and hear the result
 6. **Download Final Audio** or **Save to Project**
 
+## Release notes
+
+See [`RELEASE_NOTES.md`](./RELEASE_NOTES.md) for v2.0.0 and earlier.
+
 ## License
 
 **Copyright © 2026 Guided Meditation Preparer. All rights reserved.**
