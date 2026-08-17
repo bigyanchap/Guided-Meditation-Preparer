@@ -50,3 +50,39 @@ Sessions are stored under:
 4. **Listen to All Together** for a raw preview
 5. **Preview Stitched Audio** to run the ffmpeg pipeline and hear the result
 6. **Download Final Audio** or **Save to Project**
+
+## License
+
+**Copyright © 2026 Guided Meditation Preparer. All rights reserved.**
+
+This software is **proprietary**. It is **not** open source.
+
+### Free for individuals
+
+You may use the app **free of charge** if you are an **individual** using it for your own personal meditation / content creation (including as a solo creator publishing your own work).
+
+Free individual use does **not** include redistribution of the app itself, or use by a company / organization.
+
+### Paid for companies
+
+A **paid commercial license is required** if the Software is used by or for:
+
+- a company, LLC, corporation, nonprofit, school, studio, agency, or other organization
+- employees or contractors of such an organization
+- client work billed through a business
+- internal business / team production workflows
+
+### Always prohibited without written permission
+
+- Selling, renting, sublicensing, or redistributing the app
+- Publishing the source code, builds, or derivatives
+- Removing or altering copyright / license notices
+
+### Buy a company license
+
+Companies: email **[bigyanchapagain@gmail.com](mailto:bigyanchapagain@gmail.com)** to purchase or request a quote.
+
+Include your company name, intended use, and number of seats. Pricing and payment terms are confirmed by email.
+
+See [`LICENSE`](./LICENSE) for the full terms.
+

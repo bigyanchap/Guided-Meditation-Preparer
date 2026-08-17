@@ -4,7 +4,8 @@
   "description": "Record guided meditation scripts in segments, process, and stitch into one audio file",
   "main": "electron/main.js",
   "author": "Guided Meditation Preparer",
-  "license": "MIT",
+  "license": "UNLICENSED",
+  "private": true,
   "scripts": {
     "dev": "concurrently -k \"npm run dev:renderer\" \"npm run dev:electron\"",
     "sync:icon": "cp assets/icon.png renderer/public/icon.png",
