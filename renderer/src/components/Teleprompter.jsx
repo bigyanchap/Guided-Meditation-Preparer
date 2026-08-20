@@ -201,7 +201,7 @@ export default function Teleprompter() {
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder={
-            'Take a slow breath in...\n\nAnd gently release.(3)\n\nFeel your shoulders soften.'
+            'Take a slow breath in...\n\nAnd gently release.\n(3)\n\nFeel your shoulders soften.'
           }
           spellCheck
         />

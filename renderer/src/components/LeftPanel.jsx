@@ -55,7 +55,8 @@ export default function LeftPanel({
         {segments.length === 0 ? (
           <div className="empty-state">
             <p>No segments yet.</p>
-            <p className="empty-hint">Add your first recording below. Progress auto-saves.</p>
+            <p className="empty-hint">Add your first recording below.</p>
+            <p className="empty-hint">Note: for every new segment, first 1 second and last 1 second willl be auto trimmed off when you consolidate all segments.</p>
           </div>
         ) : (
           segments.map((seg) => (
