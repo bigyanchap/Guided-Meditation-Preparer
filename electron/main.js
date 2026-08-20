@@ -2,7 +2,17 @@ const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron')
 const path = require('path')
 const fs = require('fs')
 const Store = require('electron-store')
-const { ensureSession, getSessionPaths, createNewSession } = require('./session')
+const {
+  ensureSession,
+  createNewSession,
+  getSessionPaths,
+  saveProjectState,
+  saveProjectAs,
+  loadProjectState,
+  listProjects,
+  openProjectFolder,
+  getBaseDir,
+} = require('./session')
 const { processPipeline, getFfmpegPath, trimKeepStart } = require('./audioProcessor')
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -96,15 +106,104 @@ ipcMain.handle('window:close', () => {
   mainWindow?.close()
 })
 
-// ── Session ──────────────────────────────────────────────────────
+// ── Session / project ────────────────────────────────────────────
 ipcMain.handle('session:get', () => {
   if (!currentSession) currentSession = ensureSession(store)
-  return currentSession
+  const project = loadProjectState(currentSession.folder)
+  return {
+    ...currentSession,
+    project,
+  }
 })
 
 ipcMain.handle('session:new', () => {
   currentSession = createNewSession(store)
-  return currentSession
+  const project = loadProjectState(currentSession.folder)
+  return {
+    ...currentSession,
+    project,
+  }
+})
+
+ipcMain.handle('session:saveProject', async (_event, state) => {
+  if (!currentSession) currentSession = ensureSession(store)
+  try {
+    const saved = saveProjectState(currentSession.folder, state)
+    if (state?.finalOutputPath) store.set('finalOutputPath', state.finalOutputPath)
+    return { ok: true, savedAt: saved.savedAt, folder: currentSession.folder }
+  } catch (err) {
+    return { ok: false, error: err.message }
+  }
+})
+
+ipcMain.handle('session:saveProjectAs', async (_event, { parentDir, projectName, state }) => {
+  if (!currentSession) currentSession = ensureSession(store)
+  try {
+    const result = saveProjectAs(store, {
+      parentDir,
+      projectName,
+      state,
+      currentFolder: currentSession.folder,
+    })
+    currentSession = { folder: result.folder, createdAt: result.createdAt }
+    return { ok: true, ...result }
+  } catch (err) {
+    return { ok: false, error: err.message }
+  }
+})
+
+ipcMain.handle('session:pickDirectory', async (_event, { title, defaultPath } = {}) => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: title || 'Choose Folder',
+    defaultPath: defaultPath || getBaseDir(),
+    properties: ['openDirectory', 'createDirectory'],
+  })
+  if (result.canceled || !result.filePaths?.[0]) {
+    return { ok: false, canceled: true }
+  }
+  return { ok: true, path: result.filePaths[0] }
+})
+
+ipcMain.handle('session:getDefaultSaveDir', async () => {
+  const base = getBaseDir()
+  fs.mkdirSync(base, { recursive: true })
+  return { ok: true, path: base }
+})
+
+ipcMain.handle('session:listProjects', async () => {
+  try {
+    return { ok: true, projects: listProjects() }
+  } catch (err) {
+    return { ok: false, error: err.message, projects: [] }
+  }
+})
+
+ipcMain.handle('session:openProject', async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: 'Open Meditation Project',
+    defaultPath: getBaseDir(),
+    properties: ['openDirectory'],
+  })
+  if (result.canceled || !result.filePaths?.[0]) {
+    return { ok: false, canceled: true }
+  }
+  try {
+    const opened = openProjectFolder(store, result.filePaths[0])
+    currentSession = { folder: opened.folder, createdAt: opened.createdAt }
+    return { ok: true, ...opened }
+  } catch (err) {
+    return { ok: false, error: err.message }
+  }
+})
+
+ipcMain.handle('session:openRecent', async (_event, folder) => {
+  try {
+    const opened = openProjectFolder(store, folder)
+    currentSession = { folder: opened.folder, createdAt: opened.createdAt }
+    return { ok: true, ...opened }
+  } catch (err) {
+    return { ok: false, error: err.message }
+  }
 })
 
 // ── File I/O ─────────────────────────────────────────────────────

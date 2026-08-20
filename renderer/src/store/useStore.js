@@ -5,6 +5,13 @@ const nextId = (segments) =>
 
 const SCRIPT_KEY = 'meditation-script'
 
+const DEFAULT_PIPELINE = {
+  noise: 'pending',
+  voice: 'pending',
+  trim: 'pending',
+  stitch: 'pending',
+}
+
 function loadScript() {
   try {
     return localStorage.getItem(SCRIPT_KEY) || ''
@@ -22,12 +29,7 @@ export const useStore = create((set, get) => ({
   micError: null,
   sessionFolder: null,
   processingStep: null, // null | 'noise' | 'voice' | 'trim' | 'stitch'
-  pipelineStatuses: {
-    noise: 'pending',
-    voice: 'pending',
-    trim: 'pending',
-    stitch: 'pending',
-  },
+  pipelineStatuses: { ...DEFAULT_PIPELINE },
   finalOutputPath: null,
   isProcessing: false,
   isPlayingAll: false,
@@ -38,8 +40,14 @@ export const useStore = create((set, get) => ({
   scriptText: loadScript(),
   teleprompterEditing: !loadScript().trim(),
   teleprompterAutoplay: false,
+  projectName: '',
+  projectDirty: false,
+  projectSavedAt: null,
+  projectSaving: false,
 
   setSessionFolder: (folder) => set({ sessionFolder: folder }),
+
+  setProjectName: (projectName) => set({ projectName, projectDirty: true }),
 
   setScriptText: (scriptText) => {
     try {
@@ -47,10 +55,11 @@ export const useStore = create((set, get) => ({
     } catch {
       /* ignore quota */
     }
-    set({ scriptText })
+    set({ scriptText, projectDirty: true })
   },
 
-  setTeleprompterEditing: (teleprompterEditing) => set({ teleprompterEditing }),
+  setTeleprompterEditing: (teleprompterEditing) =>
+    set({ teleprompterEditing, projectDirty: true }),
 
   setTeleprompterAutoplay: (teleprompterAutoplay) => set({ teleprompterAutoplay }),
 
@@ -59,6 +68,89 @@ export const useStore = create((set, get) => ({
   setWarning: (warning) => set({ warning }),
 
   clearWarning: () => set({ warning: null, shortSegmentWarning: null }),
+
+  setProjectSaving: (projectSaving) => set({ projectSaving }),
+
+  markProjectSaved: (savedAt) =>
+    set({ projectDirty: false, projectSavedAt: savedAt || Date.now(), projectSaving: false }),
+
+  markProjectDirty: () => set({ projectDirty: true }),
+
+  getProjectSnapshot: () => {
+    const s = get()
+    return {
+      version: 1,
+      projectName: s.projectName || '',
+      activeSegmentId: s.activeSegmentId,
+      scriptText: s.scriptText,
+      teleprompterEditing: s.teleprompterEditing,
+      finalOutputPath: s.finalOutputPath,
+      pipelineStatuses: s.pipelineStatuses,
+      segments: s.segments.map((seg) => ({
+        id: seg.id,
+        label: seg.label,
+        status: seg.status === 'recording' ? 'pending' : seg.status,
+        filePath: seg.filePath,
+        duration: seg.duration,
+        waveformData: seg.waveformData || [],
+      })),
+    }
+  },
+
+  hydrateProject: (project, folder) => {
+    if (!project) {
+      set({
+        sessionFolder: folder || get().sessionFolder,
+        projectName: '',
+        segments: [],
+        activeSegmentId: null,
+        scriptText: '',
+        teleprompterEditing: true,
+        finalOutputPath: null,
+        pipelineStatuses: { ...DEFAULT_PIPELINE },
+        processingStep: null,
+        isProcessing: false,
+        isRecording: false,
+        teleprompterAutoplay: false,
+        projectDirty: false,
+        projectSavedAt: null,
+      })
+      try {
+        localStorage.setItem(SCRIPT_KEY, '')
+      } catch {
+        /* ignore */
+      }
+      return
+    }
+
+    try {
+      localStorage.setItem(SCRIPT_KEY, project.scriptText || '')
+    } catch {
+      /* ignore */
+    }
+
+    set({
+      sessionFolder: folder || get().sessionFolder,
+      projectName: project.projectName || '',
+      segments: project.segments || [],
+      activeSegmentId: project.activeSegmentId,
+      scriptText: project.scriptText || '',
+      teleprompterEditing: Boolean(project.teleprompterEditing),
+      finalOutputPath: project.finalOutputPath || null,
+      pipelineStatuses: project.pipelineStatuses || { ...DEFAULT_PIPELINE },
+      processingStep: null,
+      isProcessing: false,
+      isRecording: false,
+      recordingElapsed: 0,
+      liveWaveform: [],
+      teleprompterAutoplay: false,
+      playingSegmentId: null,
+      playbackTime: 0,
+      projectDirty: false,
+      projectSavedAt: project.savedAt || Date.now(),
+      shortSegmentWarning: null,
+    })
+  },
 
   addSegment: () => {
     const { segments } = get()
@@ -74,13 +166,14 @@ export const useStore = create((set, get) => ({
     set({
       segments: [...segments, segment],
       activeSegmentId: id,
+      projectDirty: true,
     })
     return id
   },
 
   selectSegment: (id) => {
     if (get().isRecording) return
-    set({ activeSegmentId: id })
+    set({ activeSegmentId: id, projectDirty: true })
   },
 
   setRecording: (isRecording) => set({ isRecording }),
@@ -96,6 +189,7 @@ export const useStore = create((set, get) => ({
       ),
       isRecording: true,
       activeSegmentId: id,
+      projectDirty: true,
     })
   },
 
@@ -115,6 +209,7 @@ export const useStore = create((set, get) => ({
       isRecording: false,
       recordingElapsed: 0,
       liveWaveform: [],
+      projectDirty: true,
       shortSegmentWarning:
         duration < 2
           ? 'Segment too short — did you forget to record?'
@@ -135,6 +230,7 @@ export const useStore = create((set, get) => ({
             }
           : s
       ),
+      projectDirty: true,
     })
   },
 
@@ -152,6 +248,22 @@ export const useStore = create((set, get) => ({
           : s
       ),
       shortSegmentWarning: null,
+      projectDirty: true,
+    })
+  },
+
+  removeSegment: (id) => {
+    const { segments, activeSegmentId } = get()
+    const next = segments.filter((s) => s.id !== id)
+    const nextActive =
+      activeSegmentId === id
+        ? next[0]?.id ?? null
+        : activeSegmentId
+    set({
+      segments: next,
+      activeSegmentId: nextActive,
+      shortSegmentWarning: null,
+      projectDirty: true,
     })
   },
 
@@ -163,7 +275,7 @@ export const useStore = create((set, get) => ({
 
   setProcessingStep: (step) => {
     const order = ['noise', 'voice', 'trim', 'stitch']
-    const statuses = { noise: 'pending', voice: 'pending', trim: 'pending', stitch: 'pending' }
+    const statuses = { ...DEFAULT_PIPELINE }
 
     if (step === null) {
       set({ processingStep: null, pipelineStatuses: statuses, isProcessing: false })
@@ -181,6 +293,7 @@ export const useStore = create((set, get) => ({
       processingStep: step,
       pipelineStatuses: statuses,
       isProcessing: true,
+      projectDirty: true,
     })
   },
 
@@ -195,6 +308,7 @@ export const useStore = create((set, get) => ({
         trim: 'done',
         stitch: 'done',
       },
+      projectDirty: true,
     })
   },
 
@@ -202,6 +316,7 @@ export const useStore = create((set, get) => ({
     set({
       processingStep: null,
       isProcessing: false,
+      projectDirty: true,
     })
   },
 

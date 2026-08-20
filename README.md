@@ -38,9 +38,12 @@ Sessions are stored under:
 
 `~/Documents/MeditationPreparer/sessions/[timestamp]/`
 
+- Project state: `project.json` (script, segments, pipeline status — auto-saved)
 - Raw segments: `segment_1.wav`, …
 - Processed: `processed/processed_N.wav`
 - Final: `processed/final_meditation.mp3`
+
+Use **Save Project** (name + location dialog) and **Open Project** above Segments. Closing the app also auto-saves; reopen to resume where you left off.
 
 ## Usage
 

@@ -1,8 +1,13 @@
 import React from 'react'
 
-export default function TitleBar() {
+export default function TitleBar({ onClose } = {}) {
   const api = window.electronAPI
   const isMac = api?.platform === 'darwin'
+
+  const handleClose = async () => {
+    if (onClose) await onClose()
+    else await api?.close()
+  }
 
   return (
     <header className={`titlebar${isMac ? ' is-mac' : ' is-win'}`}>
@@ -37,7 +42,7 @@ export default function TitleBar() {
             type="button"
             className="win-btn win-btn-close"
             aria-label="Close"
-            onClick={() => api?.close()}
+            onClick={handleClose}
           >
             <svg width="10" height="10" viewBox="0 0 10 10">
               <path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" strokeWidth="1.2" />

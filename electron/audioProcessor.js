@@ -90,24 +90,29 @@ function encodeWavBuffer(samples, sampleRate = 44100) {
   return buffer
 }
 
-const HEAD_TRIM_SEC = 2
+const HEAD_TRIM_SEC = 1
 const TAIL_TRIM_SEC = 1
 
 /**
  * Process a single segment:
- * 1. Noise reduction (afftdn)
- * 2. Deepen voice (bass boost)
- * 3. Trim first 2 seconds and last 1 second
+ * 1. Gentle noise reduction (afftdn) — soft enough to avoid metallic artifacts
+ * 2. Light voice warmth (small bass lift)
+ * 3. Soft peak limit so bass never clips
+ * 4. Trim first 1 second and last 1 second
  */
 async function processSegment(inputPath, outputPath) {
   const duration = getWavDuration(inputPath)
   const trimStart = Math.min(HEAD_TRIM_SEC, Math.max(0, duration - 0.1))
   const trimEnd = Math.max(trimStart + 0.1, duration - TAIL_TRIM_SEC)
 
-  // Combined filter chain: denoise → bass deepen → trim head/tail
+  // Soft chain: light denoise → gentle warmth → prevent clipping → trim
   const filters = [
-    'afftdn=nf=-25',
-    'bass=g=6:f=100:w=0.5',
+    // nr↑ = stronger; nf closer to -20 = more aggressive. Keep both mild.
+    'afftdn=nr=3:nf=-48',
+    // +2 dB around 150 Hz — warmth without mud or boom
+    'bass=g=2:f=150:w=0.4',
+    // Catch any peaks after EQ so the voice stays clean
+    'alimiter=limit=0.95:level=false',
     `atrim=${trimStart.toFixed(3)}:${trimEnd.toFixed(3)}`,
     'asetpts=PTS-STARTPTS',
   ]

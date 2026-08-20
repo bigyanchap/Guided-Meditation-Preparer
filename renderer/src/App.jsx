@@ -6,34 +6,27 @@ import RightPanel from './components/RightPanel'
 import { useStore } from './store/useStore'
 import { useRecorder } from './hooks/useRecorder'
 import { usePlayback } from './hooks/usePlayback'
+import { useProjectPersistence } from './hooks/useProjectPersistence'
 import './index.css'
 
 export default function App() {
   const { startRecording, stopRecording } = useRecorder()
   const { playSegment, playAll, playFinal, stop } = usePlayback()
+  const { saveProjectNow, openProject } = useProjectPersistence()
+
+  const handleAppClose = useCallback(async () => {
+    await saveProjectNow({ force: true })
+    await window.electronAPI?.close()
+  }, [saveProjectNow])
 
   const isRecording = useStore((s) => s.isRecording)
   const isPlayingAll = useStore((s) => s.isPlayingAll)
-  const setSessionFolder = useStore((s) => s.setSessionFolder)
   const setProcessingStep = useStore((s) => s.setProcessingStep)
   const markPipelineDone = useStore((s) => s.markPipelineDone)
   const markPipelineError = useStore((s) => s.markPipelineError)
   const setWarning = useStore((s) => s.setWarning)
   const resetSegment = useStore((s) => s.resetSegment)
   const clearWarning = useStore((s) => s.clearWarning)
-
-  useEffect(() => {
-    async function init() {
-      if (!window.electronAPI) return
-      try {
-        const session = await window.electronAPI.getSession()
-        setSessionFolder(session.folder)
-      } catch (err) {
-        setWarning(`Session error: ${err.message}`)
-      }
-    }
-    init()
-  }, [setSessionFolder, setWarning])
 
   useEffect(() => {
     if (!window.electronAPI) return undefined
@@ -99,6 +92,19 @@ export default function App() {
       useStore.getState().selectSegment(segment.id)
     },
     [isRecording, resetSegment, stop, clearWarning]
+  )
+
+  const handleDeleteSegment = useCallback(
+    async (segment) => {
+      if (isRecording) return
+      clearWarning()
+      stop()
+      if (segment.filePath && window.electronAPI) {
+        await window.electronAPI.deleteSegment(segment.filePath)
+      }
+      useStore.getState().removeSegment(segment.id)
+    },
+    [isRecording, stop, clearWarning]
   )
 
   const handlePlaySegment = useCallback(
@@ -208,35 +214,24 @@ export default function App() {
     }
   }, [clearWarning, setWarning])
 
-  const handleSaveToProject = useCallback(async () => {
-    clearWarning()
-    const path = useStore.getState().finalOutputPath
-    if (!path || !window.electronAPI) return
-    const result = await window.electronAPI.saveToProject(path)
-    if (result.ok) {
-      setWarning(`Saved to project: ${result.path}`)
-    } else {
-      setWarning(result.error || 'Save failed')
-    }
-  }, [clearWarning, setWarning])
-
   return (
     <div className="app-shell">
       <div className="app-bg" />
       <div className="app-veil" />
-      <TitleBar />
+      <TitleBar onClose={handleAppClose} />
       <div className="app-body">
         <LeftPanel
           onPlaySegment={handlePlaySegment}
           onRetake={handleRetake}
+          onDeleteSegment={handleDeleteSegment}
           onTrimRemaining={handleTrimRemaining}
+          onOpenProject={openProject}
         />
         <CenterPanel onToggleRecord={handleToggleRecord} />
         <RightPanel
           onListenAll={handleListenAll}
           onPreviewStitched={handlePreviewStitched}
           onDownload={handleDownload}
-          onSaveToProject={handleSaveToProject}
         />
       </div>
     </div>

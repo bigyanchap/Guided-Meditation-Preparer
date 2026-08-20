@@ -1,5 +1,30 @@
 export {}
 
+type ProjectState = {
+  version?: number
+  savedAt?: number
+  createdAt?: number
+  projectName?: string
+  activeSegmentId?: number | null
+  scriptText?: string
+  teleprompterEditing?: boolean
+  finalOutputPath?: string | null
+  pipelineStatuses?: {
+    noise: string
+    voice: string
+    trim: string
+    stitch: string
+  }
+  segments?: Array<{
+    id: number
+    label: string
+    status: string
+    filePath: string | null
+    duration: number
+    waveformData: number[]
+  }>
+}
+
 declare global {
   interface Window {
     electronAPI?: {
@@ -7,8 +32,65 @@ declare global {
       minimize: () => Promise<void>
       maximize: () => Promise<void>
       close: () => Promise<void>
-      getSession: () => Promise<{ folder: string; createdAt: number }>
-      newSession: () => Promise<{ folder: string; createdAt: number }>
+      getSession: () => Promise<{
+        folder: string
+        createdAt: number
+        project?: ProjectState | null
+      }>
+      newSession: () => Promise<{
+        folder: string
+        createdAt: number
+        project?: ProjectState | null
+      }>
+      saveProject: (state: ProjectState) => Promise<{
+        ok: boolean
+        savedAt?: number
+        folder?: string
+        error?: string
+      }>
+      saveProjectAs: (payload: {
+        parentDir: string
+        projectName: string
+        state: ProjectState
+      }) => Promise<{
+        ok: boolean
+        folder?: string
+        createdAt?: number
+        project?: ProjectState | null
+        savedAt?: number
+        error?: string
+      }>
+      pickDirectory: (opts?: {
+        title?: string
+        defaultPath?: string
+      }) => Promise<{ ok: boolean; path?: string; canceled?: boolean }>
+      getDefaultSaveDir: () => Promise<{ ok: boolean; path?: string }>
+      listProjects: () => Promise<{
+        ok: boolean
+        projects: Array<{
+          folder: string
+          name: string
+          savedAt: number
+          segmentCount: number
+          hasScript: boolean
+        }>
+        error?: string
+      }>
+      openProject: () => Promise<{
+        ok: boolean
+        canceled?: boolean
+        folder?: string
+        createdAt?: number
+        project?: ProjectState | null
+        error?: string
+      }>
+      openRecentProject: (folder: string) => Promise<{
+        ok: boolean
+        folder?: string
+        createdAt?: number
+        project?: ProjectState | null
+        error?: string
+      }>
       saveSegment: (payload: {
         segmentId: number
         buffer: ArrayBuffer

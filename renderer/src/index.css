@@ -287,6 +287,150 @@ button:disabled {
   letter-spacing: 0.01em;
 }
 
+.project-bar {
+  margin-bottom: 14px;
+}
+
+.project-bar-top {
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.project-status {
+  font-size: 11px;
+  color: var(--ink-faint);
+  line-height: 1.35;
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-saved-to {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--ink-muted);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.project-btn {
+  flex: 1;
+  text-align: center;
+  padding: 7px 8px !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  font-size: 12px !important;
+}
+
+.project-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Save Project modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(30, 42, 36, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.modal-card {
+  width: min(420px, 100%);
+  padding: 22px 22px 18px;
+  border-radius: 20px;
+}
+
+.modal-card h3 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  margin-bottom: 4px;
+}
+
+.modal-sub {
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin-bottom: 16px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.modal-field input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+  user-select: text;
+}
+
+.modal-field input:focus {
+  border-color: rgba(74, 107, 90, 0.45);
+  box-shadow: 0 0 0 3px var(--sage-soft);
+}
+
+.modal-location-row {
+  display: flex;
+  gap: 8px;
+}
+
+.modal-location-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.modal-browse {
+  flex-shrink: 0;
+  padding: 8px 12px !important;
+  border-radius: 10px !important;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.modal-error {
+  font-size: 12px;
+  color: var(--danger);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
 /* ── Left panel ────────────────────────────────────────────────── */
 .panel-left {
   animation: panel-in 0.6s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -397,6 +541,7 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
+  gap: 8px;
 }
 
 .record-card-label {
@@ -404,6 +549,9 @@ button:disabled {
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--sage-deep);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .badge {
@@ -450,10 +598,42 @@ button:disabled {
 
 .record-card-meta {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
+  flex-direction: column;
+  align-items: stretch;
   gap: 6px;
+  margin-top: 8px;
+}
+
+.record-card-meta-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  gap: 10px;
+}
+
+.record-card-delete {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  color: var(--ink-faint);
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.record-card-delete:hover:not(:disabled) {
+  color: #fff;
+  background: var(--danger);
+  border-color: rgba(169, 68, 66, 0.45);
+}
+
+.record-card-delete:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .record-card-wave-wrap {
@@ -599,13 +779,16 @@ button:disabled {
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   color: var(--ink-muted);
+  line-height: 1.2;
 }
 
 .record-card-actions {
   display: flex;
   gap: 4px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 0;
 }
 
 .btn-ghost {
@@ -846,6 +1029,10 @@ button:disabled {
 
 .btn-solid:hover:not(:disabled) {
   transform: translateY(-1px);
+}
+
+.btn-solid.btn-danger {
+  background: linear-gradient(160deg, #c45c5c, var(--danger));
 }
 
 .teleprompter-read {

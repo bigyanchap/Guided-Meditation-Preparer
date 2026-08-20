@@ -20,7 +20,7 @@ A major update focused on recording with a live teleprompter, precise segment ed
 ### Audio pipeline
 
 - Packaged **ffmpeg** correctly for macOS (fixes white-screen / stitch crashes from missing or asar-trapped binaries)
-- Stitched processing trims the **first 2 seconds** and the **last 1 second** of each segment
+- Stitched processing trims the **first 1 second** and the **last 1 second** of each segment
 - Waveforms emphasize spoken parts more clearly
 
 ### Recording & playback

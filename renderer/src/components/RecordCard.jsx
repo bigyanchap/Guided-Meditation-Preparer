@@ -27,12 +27,14 @@ export default function RecordCard({
   onSelect,
   onPlay,
   onRetake,
+  onDelete,
   onTrimRemaining,
 }) {
   const playbackTime = useStore((s) => s.playbackTime)
   const [playhead, setPlayhead] = useState(0)
   const [trimming, setTrimming] = useState(false)
   const [dragging, setDragging] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
   const trackRef = useRef(null)
 
   useEffect(() => {
@@ -229,6 +231,29 @@ export default function RecordCard({
           >
             {trimming ? 'Trimming…' : 'Delete remaining'}
           </button>
+        </div>
+        <div
+          className="record-card-meta-footer"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            className="record-card-delete"
+            disabled={segment.status === 'recording'}
+            onClick={() => setConfirmDelete(true)}
+            title="Delete segment"
+            aria-label={`Delete ${segment.label}`}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path
+                d="M9 3h6M4 7h16M8 7v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V7M10 11v6M14 11v6"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
           <button
             type="button"
             className="btn-ghost"
@@ -240,6 +265,50 @@ export default function RecordCard({
           </button>
         </div>
       </div>
+
+      {confirmDelete && (
+        <div
+          className="modal-backdrop"
+          role="presentation"
+          onClick={(e) => {
+            e.stopPropagation()
+            setConfirmDelete(false)
+          }}
+        >
+          <div
+            className="modal-card glass"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`delete-segment-${segment.id}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 id={`delete-segment-${segment.id}`}>Delete segment?</h3>
+            <p className="modal-sub">
+              This will permanently remove <strong>{segment.label}</strong> and its audio. This
+              cannot be undone.
+            </p>
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn-ghost"
+                onClick={() => setConfirmDelete(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-solid btn-danger"
+                onClick={() => {
+                  setConfirmDelete(false)
+                  onDelete?.()
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </article>
   )
 }

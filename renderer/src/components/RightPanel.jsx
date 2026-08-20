@@ -5,17 +5,17 @@ const STEPS = [
   {
     key: 'noise',
     title: 'Remove Background Noise',
-    desc: 'Filter distant sounds & fan hiss',
+    desc: 'Light cleanup of fan hiss & room tone',
   },
   {
     key: 'voice',
     title: 'Deepen Voice',
-    desc: 'Warm low frequencies (+6 dB)',
+    desc: 'Gentle low-end warmth (+2 dB)',
   },
   {
     key: 'trim',
     title: 'Trim Edges',
-    desc: 'Drop first 2s and last 1s',
+    desc: 'Drop first 1s and last 1s',
   },
   {
     key: 'stitch',
@@ -34,7 +34,6 @@ export default function RightPanel({
   onListenAll,
   onPreviewStitched,
   onDownload,
-  onSaveToProject,
 }) {
   const doneCount = useStore((s) => s.segments.filter((x) => x.status === 'done').length)
   const isProcessing = useStore((s) => s.isProcessing)
@@ -102,14 +101,6 @@ export default function RightPanel({
           onClick={onDownload}
         >
           ⬇ Download Final Audio
-        </button>
-        <button
-          type="button"
-          className="btn-block"
-          disabled={!canExport || isProcessing}
-          onClick={onSaveToProject}
-        >
-          📁 Save to Project
         </button>
       </section>
 
