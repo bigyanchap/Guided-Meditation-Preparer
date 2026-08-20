@@ -13,7 +13,7 @@ export default function TitleBar({ onClose } = {}) {
     <header className={`titlebar${isMac ? ' is-mac' : ' is-win'}`}>
       {isMac && <div className="titlebar-traffic-safe" aria-hidden />}
       <div className="titlebar-drag">
-        <img className="titlebar-logo" src="/icon.png" alt="" width="22" height="22" />
+        <img className="titlebar-logo" src="./icon.png" alt="" width="22" height="22" />
         <h1 className="titlebar-title">Guided Meditation Preparer</h1>
       </div>
       {!isMac && (
